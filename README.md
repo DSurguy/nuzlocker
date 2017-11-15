@@ -1,0 +1,2 @@
+# nuzlocker
+Nuzlocke Challenge Manager
