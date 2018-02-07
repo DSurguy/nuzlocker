@@ -59,5 +59,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# python env folder
+.nuzlocker_env
+
 # Output
 dist
