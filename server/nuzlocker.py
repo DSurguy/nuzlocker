@@ -5,10 +5,6 @@ from encounter import *
 
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-    return "Hello World!"
-
 @app.route("/pokemon/<pokemonId>")
 def pokemonInfo(pokemonId):
     return "Information on %s" % 'bulbasaur'
