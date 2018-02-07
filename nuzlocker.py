@@ -11,7 +11,7 @@ app = Flask(__name__, static_folder='dist/public')
 @app.route('/<path:path>')
 def serve(path):
     if(path == ""):
-        return send_from_directory("dist/public/" + path)
+        return send_from_directory("dist/public/", "index.html")
     else:
         if(os.path.exists("dist/public/" + path)):
             return send_from_directory("dist/public", path)
@@ -30,3 +30,7 @@ def postEncounter():
         route = data['route']
         e = Encounter(datetime.datetime.now().time(), route, pokemonIds)
         return "Logged encounter with {0} on route {1}".format(pokemonIds, route)
+
+
+if __name__ == '__main__':
+    app.run(use_reloader=True, port=5000, threaded=True)
