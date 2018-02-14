@@ -18,6 +18,7 @@ class InMemoryCache:
         return {k: {'pokmon': v.value.asJson(), 'usage': v.usage} for k, v in self._storage.items()}
 
     def get(self, key):
+
         if key not in self._storage:
             print("key ${} not in storage".format(key))
             self._storage[key] = self.retrievalFunc(key)
