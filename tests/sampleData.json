@@ -1,0 +1,40 @@
+{
+  "pokemon": [
+    {
+      "id": 1,
+      "name": "bulbasaur",
+      "routes": [
+        1
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ivysaur",
+      "routes": []
+    },
+    {
+      "id": 3,
+      "name": "venusaur",
+      "routes": []
+    }
+  ],
+  "routes": [
+    {
+      "id": 1,
+      "name": "Pallet Town",
+      "pokemon": [
+        1,
+        4,
+        7
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Route 1",
+      "pokemon": [
+        8,
+        10
+      ]
+    }
+  ]
+}
