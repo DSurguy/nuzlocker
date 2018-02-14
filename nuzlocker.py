@@ -2,10 +2,15 @@ import datetime
 import os
 
 from flask import Flask, request, send_from_directory
-
+from flask import jsonify
 from models.encounter import Encounter
+from models.pokemon import Pokemon
+from cache.InMemoryCache import InMemoryCache, CacheEntry
 
 app = Flask(__name__, static_folder='dist/public')
+
+cache = InMemoryCache(20, lambda x: CacheEntry(x, Pokemon({'id': x, 'name': x})))
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -20,7 +25,12 @@ def serve(path):
 
 @app.route("/pokemon/<pokemonId>")
 def pokemonInfo(pokemonId):
-    return "Information on %s" % 'bulbasaur'
+    return jsonify(cache.get(pokemonId).asJson())
+    # return "Information on %s" % 'bulbasaur'
+
+@app.route("/all", methods=['GET'])
+def displayAll():
+    return jsonify(cache.statusMap())
 
 @app.route("/encounter", methods=['POST'])
 def postEncounter():
