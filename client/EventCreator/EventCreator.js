@@ -6,30 +6,17 @@ let _ = {
   each
 };
 
-let eventTypes = [{
-  id: '0',
-  name: 'encounter',
-  label: 'Pokemon Encounter'
-}, {
-  id: '1',
-  name: 'pokemonStatusUpdate',
-  label: 'Pokemon Update'
-}, {
-  id: '2',
-  name: 'goalStatusUpdate',
-  label: 'Goal Update'
-}];
-
 export default class EventCreator extends React.Component {
   constructor(props){
     super(props);
 
     this.state = {
-      eventType: eventTypes[0]
+      eventType: this.props.eventTypes[0]
     }
 
     _.each([
-      'onChangeTypeSelect'
+      'onChangeTypeSelect',
+      'onClickCreateButton'
     ], (funcName)=>{
       this[funcName] = this[funcName].bind(this);
     })
@@ -38,12 +25,18 @@ export default class EventCreator extends React.Component {
   render(){
     return (
       <div className="eventCreator">
-        <select onChange={this.onChangeTypeSelect}>
-          {eventTypes.map((type)=>{
-            return (<option key={type.id} value={type.id}>{type.label}</option>)
-          })}
-        </select>
-        <button>Create new {this.state.eventType.label}</button>
+        <div className="row mb-1">
+          <select className="form-control" onChange={this.onChangeTypeSelect}>
+            {this.props.eventTypes.map((type)=>{
+              return (<option key={type.id} value={type.id}>{type.label}</option>)
+            })}
+          </select>
+        </div>
+        <div className="row">
+          <div className="clearfix">
+            <button className="btn btn-default" onClick={this.onClickCreateButton}>Create new {this.state.eventType.label}</button>
+          </div>
+        </div>
       </div>
     )
   }
@@ -52,9 +45,16 @@ export default class EventCreator extends React.Component {
    * Event Handlers
    */
   onChangeTypeSelect(event){
-    let newEventType = _.find(eventTypes, {id: event.target.value});
+    let newEventType = _.find(this.props.eventTypes, {id: event.target.value});
     this.setState({
       eventType: newEventType
+    })
+  }
+
+  onClickCreateButton(){
+    this.props.createEvent({
+      type: this.state.eventType.name,
+      metadata: {}
     })
   }
 }

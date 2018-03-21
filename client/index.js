@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import EventCreator from './EventCreator/EventCreator.js';
+import EventFeed from './EventFeed/EventFeed.js';
 
 ReactDOM.render(
-  <React.Fragment>
-    <h1>Hello, world!</h1>
-    <EventCreator />
-  </React.Fragment>,
+  <div className="container">
+    <EventFeed/>
+  </div>,
   document.getElementById('root')
 );
