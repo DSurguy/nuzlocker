@@ -16,6 +16,7 @@ module.exports = {
       }
     ]
   },
+  devtool: 'eval-source-map', 
   devServer: {
     contentBase: path.join(__dirname, "dist"),
     compress: true,

@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TestComponent from './test-component/testComponent.js'
+import EventCreator from './EventCreator/EventCreator.js';
 
 ReactDOM.render(
   <React.Fragment>
     <h1>Hello, world!</h1>
-    <TestComponent/>
+    <EventCreator />
   </React.Fragment>,
   document.getElementById('root')
 );
