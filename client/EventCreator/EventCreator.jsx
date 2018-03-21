@@ -54,7 +54,9 @@ export default class EventCreator extends React.Component {
   onClickCreateButton(){
     this.props.createEvent({
       type: this.state.eventType.name,
-      metadata: {}
+      metadata: {
+        label: this.state.eventType.label 
+      }
     })
   }
 }

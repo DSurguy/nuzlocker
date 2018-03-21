@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import EventFeed from './EventFeed/EventFeed.js';
+import EventFeed from './EventFeed/EventFeed.jsx';
 
 ReactDOM.render(
   <div className="container">
