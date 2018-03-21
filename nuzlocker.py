@@ -51,9 +51,10 @@ def api_get_encounters():
 def pokemonInfo(pokemonId):
     return jsonify(pokemon_cache.get(int(pokemonId)).asJson())
 
-@app.route("/route/<routeId>")
-def route_info(routeId):
-    return jsonify(route_cache.get(int(routeId)).asJson())
+@app.route("/api/v1/route/<routeId>")
+def api_route_info(routeId):
+    return jsonify(DB.get_route(int(routeId)))
+    # return jsonify(route_cache.get(int(routeId)).asJson())
 
 @app.route("/routes")
 def routes():
