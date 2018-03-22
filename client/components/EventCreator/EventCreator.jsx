@@ -30,9 +30,7 @@ export default class EventCreator extends React.Component {
 
   componentDidMount(){
     fetch('http://localhost:5000/api/v1/routes')
-    .then((response)=>{
-      return response.json()
-    })
+    .then(response=>response.json())
     .then((jsonData)=>{
       this.setState({
         optionsRoutes: jsonData

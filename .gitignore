@@ -64,3 +64,5 @@ typings/
 
 # Output
 dist
+
+.vscode
