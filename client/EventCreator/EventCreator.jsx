@@ -5,13 +5,19 @@ let _ = {
   find,
   each
 };
+import fetch from 'better-fetch';
+fetch.setDefaultHeaders({
+  Accept: "application/json"
+});
 
 export default class EventCreator extends React.Component {
   constructor(props){
     super(props);
 
     this.state = {
-      eventType: this.props.eventTypes[0]
+      eventType: this.props.eventTypes[0],
+      optionsRoutes: [],
+      optionsPokemon: []
     }
 
     _.each([
@@ -20,6 +26,21 @@ export default class EventCreator extends React.Component {
     ], (funcName)=>{
       this[funcName] = this[funcName].bind(this);
     })
+  }
+
+  componentDidMount(){
+    fetch('http://localhost:5000/api/v1/routes')
+    .then((response)=>{
+      return response.json()
+    })
+    .then((jsonData)=>{
+      this.setState({
+        optionsRoutes: jsonData
+      })
+    })
+    .catch((err)=>{
+      console.error(err);
+    });
   }
 
   render(){

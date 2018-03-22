@@ -1,10 +1,20 @@
 from models.pokemon import Pokemon, PokemonMetadata
 
 ENCOUNTERS = []
-ROUTES = {1: {'pokemon': [16, 19]},
-          2: {'pokemon': [10, 16, 19, 29, 32]},
-          3: {'pokemon': [16, 19, 21, 39, 56]}
-          }
+ROUTES = [{
+  'id': 0,
+  'pokemon': [16, 19],
+  'name': 'Route 1'
+}, {
+  'id': 1,
+  'pokemon': [10, 16, 19, 29, 32],
+  'name': 'Route 2'
+}, {
+  'id': 2,
+  'pokemon': [16, 19, 21, 39, 56],
+  'name': 'Route 3'
+}]
+
 POKEMON_BASE = [{'id': 1, 'name': 'bulbasaur'},
                 {'id': 2, 'name': 'ivysuar'},
                 {'id': 10, 'name': 'caterpie'},
@@ -43,9 +53,12 @@ class MockDBHelper:
         else:
             return None
 
+    def get_routes(self):
+        return [{'id': route['id'], 'name': route['name']} for route in ROUTES]
+
     def get_route(self, route_id):
-        route = ROUTES.get(route_id)
-        if route is not None:
-            return [{'id': base['id'], 'name': base['name']} for base in [self.get_pokemon_base(x) for x in route['pokemon']]]
+        route = [x for x in ROUTES if x['id'] == route_id]
+        if len(route) > 0:
+          return [{'id': base['id'], 'name': base['name']} for base in [self.get_pokemon_base(x) for x in route[0]['pokemon']]]
         else:
-            return {}
+            return []

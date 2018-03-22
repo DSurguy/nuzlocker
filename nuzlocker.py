@@ -5,6 +5,7 @@ import json
 from MockDBHelper import MockDBHelper as DBHelper
 from flask import Flask, request, send_from_directory
 from flask import jsonify
+from flask_cors import CORS
 from models.encounter import Encounter
 from models.pokemon import Pokemon
 from models.route import Route
@@ -13,6 +14,7 @@ from cache.InMemoryCache import InMemoryCache, CacheEntry
 app = Flask(__name__, static_folder='dist/public')
 
 DB = DBHelper()
+CORS(app)
 
 # Temporarily load from a static json file for development
 with open('tests/sampleData.json') as in_file:
@@ -56,9 +58,9 @@ def api_route_info(routeId):
     return jsonify(DB.get_route(int(routeId)))
     # return jsonify(route_cache.get(int(routeId)).asJson())
 
-@app.route("/routes")
+@app.route("/api/v1/routes")
 def routes():
-    return jsonify(route_cache.statusMap())
+    return jsonify(DB.get_routes())
 
 @app.route("/pokemon", methods=['GET'])
 def displayAll():
