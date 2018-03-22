@@ -2,6 +2,7 @@ import datetime
 import os
 import json
 
+from MockDBHelper import MockDBHelper as DBHelper
 from flask import Flask, request, send_from_directory
 from flask import jsonify
 from models.encounter import Encounter
@@ -11,6 +12,7 @@ from cache.InMemoryCache import InMemoryCache, CacheEntry
 
 app = Flask(__name__, static_folder='dist/public')
 
+DB = DBHelper()
 
 # Temporarily load from a static json file for development
 with open('tests/sampleData.json') as in_file:
@@ -30,13 +32,29 @@ def serve(path):
         else:
             return send_from_directory("dist/public", 'index.html')
 
+@app.route("/api/v1/encounter", methods=['POST'])
+def api_add_encounter():
+    data = request.get_json()
+    route_id = data.get('routeId')
+    pokemon_data = data.get('pokemon')
+    outcome = data.get('outcome')
+    pokemon_id = pokemon_data.get('id')
+    DB.add_encounter(route_id, pokemon_id, outcome, pokemon_data.get('metadata'))
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+@app.route("/api/v1/encounters")
+def api_get_encounters():
+    return jsonify(DB.get_encounters())
+
+
 @app.route("/pokemon/<pokemonId>")
 def pokemonInfo(pokemonId):
     return jsonify(pokemon_cache.get(int(pokemonId)).asJson())
 
-@app.route("/route/<routeId>")
-def route_info(routeId):
-    return jsonify(route_cache.get(int(routeId)).asJson())
+@app.route("/api/v1/route/<routeId>")
+def api_route_info(routeId):
+    return jsonify(DB.get_route(int(routeId)))
+    # return jsonify(route_cache.get(int(routeId)).asJson())
 
 @app.route("/routes")
 def routes():
