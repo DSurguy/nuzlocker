@@ -1,4 +1,5 @@
 from models.pokemon import Pokemon
+import uuid
 
 
 class Encounter:
@@ -7,6 +8,7 @@ class Encounter:
         self.route_id = routeId
         self.outcome = outcome
         self.pokemon = pokemon
+        self.id = str(uuid.uuid4())
 
     @staticmethod
     def new(route_id, outcome, pokemon_id, metadata):

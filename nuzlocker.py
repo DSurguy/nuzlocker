@@ -7,6 +7,7 @@ from app.passwordhalper import PasswordHelper
 from flask import Flask, request, send_from_directory, url_for, redirect
 from flask import jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user
+from app.runstatemanager import RunStateManager
 from app.user import User
 from models.encounter import Encounter
 from models.pokemon import Pokemon
@@ -18,6 +19,7 @@ app.secret_key = 'IniR3SCXKFhl87zICvxDWFG5BGxE9GC903V4jXkn7UzO1MwMuwh6ipwVca++yo
 login_manager = LoginManager(app)
 DB = DBHelper()
 PH = PasswordHelper()
+SM = RunStateManager()
 
 # Temporarily load from a static json file for development
 with open('tests/sampleData.json') as in_file:
@@ -46,13 +48,17 @@ def api_add_encounter():
     outcome = data.get('outcome')
     pokemon_id = pokemon_data.get('id')
     encounter = Encounter.new(route_id, outcome, pokemon_id, pokemon_data.get('metadata'))
-    success = DB.add_encounter(current_user.get_id(), run_id, encounter)
+    success = SM.add_encounter(run_id, current_user.get_id(), encounter)
+    # success = DB.add_encounter(current_user.get_id(), run_id, encounter)
     return json.dumps(success), 200 if success['success'] else 400, {'ContentType': 'application/json'}
 
 @app.route("/api/v1/encounters/<run_id>")
 def api_get_encounters(run_id):
     return jsonify(DB.get_encounters(current_user.get_id(), int(run_id)))
 
+@app.route("/api/v1/state/<run_id>")
+def api_get_state(run_id):
+    return jsonify(SM.get_current_state(current_user.get_id(), int(run_id)).to_dict())
 
 @app.route("/pokemon/<pokemonId>")
 def pokemonInfo(pokemonId):

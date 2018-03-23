@@ -29,21 +29,13 @@ POKEMON_BASE = [{'id': 1, 'name': 'bulbasaur'},
                 {'id': 150, 'name': 'mewtwo'}]
 
 # key is run id
-MOCK_STATE = {1: {'party': [1, 10, 16], 'box': [], 'seen': {1: [10, 16], 2: [10, 16, 29]}}}
+MOCK_STATE = {1: RunState(party=[1, 10, 16], seen={1: [10, 16], 2: [10, 16, 29]})}
 
 
 class MockDBHelper:
 
-    def add_encounter(self, user_id, run_id, encounter):
-        print(run_id)
-        print(user_id)
+    def add_encounter(self, run_id, encounter):
         ret = {'success': True}
-        allowed_runs = MOCK_RUNS.get(user_id)
-        print(allowed_runs)
-        if allowed_runs is None or run_id not in allowed_runs:
-            ret['success'] = False
-            ret['message'] = 'invalid run id'
-            return ret
 
         base = self.get_pokemon_base(encounter.pokemon.id)
         # print(encounter.pokemon.id)
@@ -63,13 +55,24 @@ class MockDBHelper:
 
     def get_run_state(self, run_id):
         ret = MOCK_STATE.get(run_id)
-        if ret is not None:
-            return ret
-        else:
-            return RunState()
+        return ret or RunState()
 
     def update_run_state(self, run_id, state):
         MOCK_STATE[run_id] = state
+
+
+    def valid_run_id(self, user_id, run_id):
+        print(user_id)
+        print(run_id)
+        allowed_runs = MOCK_RUNS.get(user_id)
+        print(allowed_runs)
+        if allowed_runs is None or run_id not in allowed_runs:
+            return False
+        return True
+
+
+    def get_state(self, run_id):
+        return MOCK_STATE[run_id]
 
     def get_encounters(self, user_id, run_id):
         allowed_runs = MOCK_RUNS.get(user_id)
