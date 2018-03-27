@@ -3,7 +3,7 @@ import os
 import json
 
 from MockDBHelper import MockDBHelper as DBHelper
-from app.passwordhalper import PasswordHelper
+from app.passwordhelper import PasswordHelper
 from flask import Flask, request, send_from_directory, url_for, redirect
 from flask import jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user
