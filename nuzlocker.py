@@ -9,6 +9,7 @@ from app.models.encounter import Encounter
 from app.MockDBHelper import MockDBHelper as DBHelper
 from app.passwordhelper import PasswordHelper
 from app.runstatemanager import RunStateManager
+from app.models.event import EventBuilder
 from app.user import User
 
 app = Flask(__name__, static_folder='dist/public')
@@ -61,13 +62,32 @@ def logout():
 def api_add_encounter():
     data = request.get_json()
     result = SM.add_encounter(data.get('runId'), current_user.get_id(), data)
-    # encounter = Encounter.from_json(data)
-    # result = SM.add_encounter(data.get('runId'), current_user.get_id(), encounter)
 
     if (result.success):
         return json.dumps({'id': result.id}), 200, {'ContentType': 'application/json'}
     else:
         return json.dumps({'error': result.message}), 400, {'ContentType': 'application/json'}
+
+@app.route("/api/v1/event", methods=['POST'])
+def api_new_event():
+    data = request.get_json()
+    run_id = data.get('runId')
+    event_type = data.get('type')
+    event_date = data.get('date')
+    event_data = data.get('event')
+    event = EventBuilder.createEvent(event_type, run_id, event_date, event_data)
+
+    if SM.add_event(current_user.get_id(), run_id, event):
+        return 'OK'
+    else:
+        return json.dumps({'error': 'could not save event'}), 400, {'ContentType': 'application/json'}
+
+@app.route("/api/v1/events/<run_id>")
+def api_get_events(run_id):
+    if not DB.valid_run_id(current_user.get_id(), int(run_id)):
+        return json.dumps({'error': 'run id is not valid'}), 400, {'ContentType': 'application/json'}
+
+    return jsonify(DB.get_events(int(run_id)))
 
 
 @app.route("/api/v1/encounters/<run_id>")
@@ -80,12 +100,18 @@ def api_get_encounters(run_id):
 
 @app.route("/api/v1/state/<run_id>")
 def api_get_state(run_id):
-    return jsonify(SM.get_current_state(current_user.get_id(), int(run_id)).to_dict())
+
+    if request.args.get('index') is not None:
+        return jsonify(DB.get_state_at_index(int(run_id), int(request.args['index'])))
+    else:
+        return jsonify(SM.get_current_state(current_user.get_id(), int(run_id)).to_dict())
 
 
 @app.route("/api/v1/route/<routeId>")
 def api_route_info(routeId):
     return jsonify(DB.get_route(int(routeId)))
+
+
 
 
 # Required by login module

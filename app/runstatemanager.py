@@ -3,6 +3,7 @@ from app.api.response import SaveResponse
 from app.models.outcome import OutcomeType
 from app.models.pokemon import Pokemon
 from app.models.encounter import Encounter
+from app.runstate import RunState
 DB = DBHelper()
 
 class RunStateManager:
@@ -35,6 +36,19 @@ class RunStateManager:
 
         return SaveResponse(success=True, id=encounter.id, message=None)
 
+    def recreate_state(self, user_id, run_id, event_id):
+        return RunState()
+
+    def add_event(self, user_id, run_id, event):
+        if not DB.valid_run_id(user_id, run_id):
+            return False
+
+        runstate = DB.get_run_state(run_id)
+        if runstate.apply_event(event):
+            DB.update_run_state(run_id, runstate)
+            return True
+
+        return False
 
     def get_run(self, user_id, run_id):
         if not DB.valid_run_id(user_id, run_id):

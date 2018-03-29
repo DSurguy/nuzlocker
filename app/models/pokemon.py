@@ -4,7 +4,7 @@ class Pokemon:
 
     @staticmethod
     def new(id, nickname):
-        return Pokemon(uuid.uuid4(), id, nickname)
+        return Pokemon(str(uuid.uuid4()), id, nickname)
 
     def __init__(self, uid, dex_id, nickname, alive=True):
         self.uid = uid

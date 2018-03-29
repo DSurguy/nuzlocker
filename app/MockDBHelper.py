@@ -59,6 +59,21 @@ class MockDBHelper:
             return False
         return True
 
+    def get_events(self, run_id):
+        return [x[1].to_dict() for x in MOCK_STATE[run_id].events]
+
+    def get_state_at_index(self, run_id, index):
+        events = [x[1] for x in MOCK_STATE[run_id].events if x[0] <= index]
+        runstate = RunState()
+        event_counter = 0
+        for event in events:
+            if not runstate.apply_event(event):
+                # TODO examine how we want to handle errors during this process
+                print("Something went wrong with event ")
+                print(event_counter)
+            event_counter += 1
+        return runstate.to_dict()
+
     def get_state(self, run_id):
         return MOCK_STATE[run_id]
 
