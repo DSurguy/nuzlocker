@@ -3,7 +3,9 @@ from app.api.response import SaveResponse
 from app.models.outcome import OutcomeType
 from app.models.pokemon import Pokemon
 from app.models.encounter import Encounter
+from app.models.event import EventBuilder
 from app.runstate import RunState
+import time
 DB = DBHelper()
 
 class RunStateManager:
@@ -27,14 +29,17 @@ class RunStateManager:
             if nickname is None:
                 return self.invalid_encounter_response
 
-        runstate = DB.get_run_state(run_id)
-        if add_new_pokemon:
-            runstate.add_new_pokemon(Pokemon.new(encounter.get_pokemon_id(), nickname))
-        DB.add_encounter(run_id, encounter)
-        runstate.add_encounter(encounter)
-        DB.update_run_state(run_id, runstate)
+            encounter.nickname = nickname
 
-        return SaveResponse(success=True, id=encounter.id, message=None)
+        event = EventBuilder.createEvent('encounter', run_id, time.time() * 1000, {'encounter': encounter})
+
+        runstate = DB.get_run_state(run_id)
+        if runstate.apply_event(event):
+            DB.add_encounter(run_id, encounter)
+            DB.update_run_state(run_id, runstate)
+            return SaveResponse(success=True, id=encounter.id, message=None)
+        else:
+            return self.invalid_encounter_response
 
     def recreate_state(self, user_id, run_id, event_id):
         return RunState()

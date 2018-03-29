@@ -19,7 +19,7 @@ class DeathEvent(Event):
     def __init__(self, run_id, date, data):
         super().__init__(run_id, date)
         self.pokemon_id = data.get(POKEMON_ID_KEY)
-        self.type = 'PokemonDeath'
+        self.type = 'death :('
 
     def apply(self, runstate):
         return runstate.pokemon_death(self.pokemon_id)
@@ -27,6 +27,22 @@ class DeathEvent(Event):
     def to_dict(self):
         base = super().to_dict()
         base['pokemon_Id'] = self.pokemon_id
+        return base
+
+class EncounterEvent(Event):
+
+    def __init__(self, run_id, date, data):
+        super().__init__(run_id, date)
+        self.encounter = data.get('encounter')
+        self.type = 'encounter'
+
+    def apply(self, runstate):
+        return runstate.add_encounter(self.encounter)
+
+    def to_dict(self):
+        base = super().to_dict()
+        base['encounter'] = self.encounter.to_dict()
+        return base
 
 class MilestoneEvent(Event):
 
@@ -45,7 +61,9 @@ class MilestoneEvent(Event):
 
 class EventBuilder:
 
-    _type_map = {'death': DeathEvent, 'milestone': MilestoneEvent}
+    _type_map = {'death': DeathEvent,
+                 'milestone': MilestoneEvent,
+                 'encounter': EncounterEvent}
 
     @staticmethod
     def createEvent(eventType, run_id, date, data):

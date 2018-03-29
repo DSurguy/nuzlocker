@@ -1,3 +1,6 @@
+from app.models.pokemon import Pokemon
+from app.models.outcome import OutcomeType
+
 class RunState:
 
     def __init__(self, party=None, box=None, seen=None, graveyard=None, events=None):
@@ -44,6 +47,7 @@ class RunState:
             pokemon.alive = False
             self.graveyard.append(pokemon)
             return True
+
         return False
 
     def _remove_from_party(self, pokemon_id):
@@ -65,3 +69,8 @@ class RunState:
 
         if encounter.get_pokemon_id() not in self.seen[encounter.route_id]:
             self.seen[encounter.route_id].append(encounter.get_pokemon_id())
+
+        if encounter.outcome == OutcomeType.CAUGHT:
+            self.add_new_pokemon(Pokemon(encounter.pokemon_uid, encounter.get_pokemon_id(), encounter.nickname))
+
+        return True

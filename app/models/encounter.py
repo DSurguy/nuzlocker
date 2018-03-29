@@ -10,6 +10,8 @@ class Encounter:
         self.pokemon_id = pokemon_id
         self.outcome = outcome
         self.id = str(uuid.uuid4())
+        if self.outcome == OutcomeType.CAUGHT:
+            self.pokemon_uid = str(uuid.uuid4())
 
     def get_pokemon_id(self):
         return self.pokemon_id
