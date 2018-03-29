@@ -7,7 +7,7 @@ class RunState:
 
 
     def to_dict(self):
-        return {'party': self.party, 'box': self.box, 'seen': self.seen}
+        return {'party': [x.to_dict() for x in self.party], 'box': [x.to_dict() for x in self.box], 'seen': self.seen}
 
     def party_size(self):
         return len(self.party)
@@ -20,17 +20,13 @@ class RunState:
 
     def add_new_pokemon(self, pokemon):
         if self.party_size() <= 5:
-            self.party.append(pokemon.id)
+            self.party.append(pokemon)
         else:
-            self.box.append(pokemon.id)
+            self.box.append(pokemon)
 
     def add_encounter(self, encounter):
         if encounter.route_id not in self.seen:
             self.seen[encounter.route_id] = []
 
-        if encounter.pokemon.id not in self.seen[encounter.route_id]:
-            self.seen[encounter.route_id].append(encounter.pokemon.id)
-
-        if encounter.outcome == 'caught':
-            self.add_new_pokemon(encounter.pokemon)
-
+        if encounter.get_pokemon_id() not in self.seen[encounter.route_id]:
+            self.seen[encounter.route_id].append(encounter.get_pokemon_id())
