@@ -4,20 +4,26 @@ import os
 from flask import Flask, request, send_from_directory
 from flask import jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user
-from app.models.encounter import Encounter
-
-from app.MockDBHelper import MockDBHelper as DBHelper
 from app.passwordhelper import PasswordHelper
 from app.runstatemanager import RunStateManager
+from app.models.runconfiguration import RunConfiguration
 from app.models.event import EventBuilder
 from app.user import User
+
+import dbconfig as cfg
+if cfg.test:
+    from app.MockDBHelper import MockDBHelper as DBHelper
+else:
+    from app.mongodbhelper import MongoDbHelper as DBHelper
+
+
 
 app = Flask(__name__, static_folder='dist/public')
 app.secret_key = 'IniR3SCXKFhl87zICvxDWFG5BGxE9GC903V4jXkn7UzO1MwMuwh6ipwVca++yoQZTgUP/V0Nwrp4WyFwdrclGbonOeSbzBQhFEJp'
 login_manager = LoginManager(app)
-DB = DBHelper()
+DB = DBHelper(cfg.mongodb['host'], cfg.mongodb['port'])
 PH = PasswordHelper()
-SM = RunStateManager()
+SM = RunStateManager(DB)
 
 '''
 # Forms and HTML routes
@@ -68,6 +74,19 @@ def api_add_encounter():
     else:
         return json.dumps({'error': result.message}), 400, {'ContentType': 'application/json'}
 
+@app.route("/api/v1/run", methods=['POST'])
+def api_new_run():
+    data = request.get_json()
+    run_id = SM.new_run(current_user.get_id(), RunConfiguration())
+
+    return json.dumps({'runId': run_id})
+
+@app.route("/api/v1/runs")
+def api_get_runs():
+    runs = SM.get_all_run_ids(current_user.get_id())
+    return json.dumps(runs)
+
+
 @app.route("/api/v1/event", methods=['POST'])
 def api_new_event():
     data = request.get_json()
@@ -97,14 +116,19 @@ def api_get_encounters(run_id):
 
     return jsonify(DB.get_encounters(current_user.get_id(), int(run_id)))
 
+@app.route("/api/v1/run/<run_id>/delete")
+def api_delete_run(run_id):
+    SM.delete_run(str(run_id))
+    return "OK"
+
 
 @app.route("/api/v1/state/<run_id>")
 def api_get_state(run_id):
 
     if request.args.get('index') is not None:
-        return jsonify(DB.get_state_at_index(int(run_id), int(request.args['index'])))
+        return jsonify(DB.get_state_at_index(str(run_id), int(request.args['index'])))
     else:
-        return jsonify(SM.get_current_state(current_user.get_id(), int(run_id)).to_dict())
+        return jsonify(SM.get_current_state(current_user.get_id(), str(run_id)))
 
 
 @app.route("/api/v1/route/<routeId>")

@@ -34,6 +34,9 @@ MOCK_STATE = {1: RunState(party=[Pokemon(1, 19, 'flappy')], seen={1: [10, 16], 2
 
 class MockDBHelper:
 
+    def __init__(self, host, port):
+        pass
+
     def pokemon_is_valid(self, pokemon_id):
         return self.get_pokemon_base(pokemon_id) is not None
 

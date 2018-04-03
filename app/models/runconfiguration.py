@@ -1,0 +1,2 @@
+class RunConfiguration:
+    pass
