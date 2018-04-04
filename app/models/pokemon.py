@@ -1,4 +1,5 @@
 import uuid
+from collections import namedtuple
 
 class Pokemon:
 
@@ -17,3 +18,8 @@ class Pokemon:
                 'dexId': self.dex_id,
                 'nickname': self.nickname,
                 'alive': self.alive}
+
+    def to_mongo(self):
+        return {str(key): str(value) for key, value in self.to_dict().items()}
+
+PokemonStub = namedtuple('PokemonStub', ['dexId', 'name'])

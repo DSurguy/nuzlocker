@@ -30,3 +30,6 @@ class Encounter:
 
     def to_dict(self):
         return {'routeId': self.route_id, 'outcome': self.outcome.value, 'pokemonId': self.pokemon_id}
+
+    def to_mongo(self):
+        return {key: str(value) for key, value in self.to_dict().items()}

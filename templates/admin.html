@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <h2>Pokemon</h2>
+        <div>
+            <h3>Add new pokemon</h3>
+            <form action="/admin/pokemon" method="post">
+                <label for="dexId">dexId:</label>
+                <input type="number" name="dexId" id="dexId">
+                <label for="name">name:</label>
+                <input type="text" name="name" id="name">
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        {% for pokemon in pokemans %}
+        <p>Id: {{pokemon.dexId}} <br/>Name: {{pokemon.name}}</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

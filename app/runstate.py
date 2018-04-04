@@ -1,15 +1,30 @@
 from app.models.pokemon import Pokemon
 from app.models.outcome import OutcomeType
+from bson.objectid import ObjectId
 
 class RunState:
 
-    def __init__(self, party=None, box=None, seen=None, graveyard=None, events=None):
+    @staticmethod
+    def from_dict(dict):
+        print(dict)
+        return RunState(dict.get('party'),
+                        dict.get('box'),
+                        dict.get('seen'),
+                        dict.get('graveyard'),
+                        dict.get('events'),
+                        str(dict.get('_id')),
+                        dict.get('userId'))
+
+
+    def __init__(self, party=None, box=None, seen=None, graveyard=None, events=None, id=None, user=None):
         self.party = party or []
         self.box = box or []
         self.seen = seen or {}
         self.graveyard = graveyard or []
         self.events = events or []
         self.event_index = len(self.events)
+        self._id = id
+        self._user = user
 
     def apply_event(self, event):
         if event.apply(self):
@@ -20,11 +35,18 @@ class RunState:
 
 
     def to_dict(self):
-        return {'party': [x.to_dict() for x in self.party],
-                'box': [x.to_dict() for x in self.box],
+        return {'party': [x.to_mongo() for x in self.party],
+                'box': [x.to_mongo() for x in self.box],
                 'seen': self.seen,
-                'graveyard': [x.to_dict() for x in self.graveyard],
-                'events': [x[1].to_dict() for x in self.events]}
+                'graveyard': [x.to_mongo() for x in self.graveyard],
+                'events': [x[1].to_mongo() for x in self.events]}
+
+    def to_mongo(self):
+        dict = self.to_dict()
+        dict['userId'] = self._user
+        # dict['_id'] = str(self._id)
+        dict['seen'] = {str(key): [str(x) for x in value] for key, value in dict['seen'].items()}
+        return dict
 
     def party_size(self):
         return len(self.party)

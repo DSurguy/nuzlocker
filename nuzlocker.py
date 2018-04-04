@@ -1,16 +1,19 @@
 import json
 import os
 
-from flask import Flask, request, send_from_directory
-from flask import jsonify
+from flask import Flask, request, send_from_directory, render_template, url_for
+from flask import jsonify, redirect
 from flask_login import LoginManager, login_user, logout_user, current_user
-from app.passwordhelper import PasswordHelper
-from app.runstatemanager import RunStateManager
-from app.models.runconfiguration import RunConfiguration
-from app.models.event import EventBuilder
-from app.user import User
 
 import dbconfig as cfg
+from app.api.passwordhelper import PasswordHelper
+from app.api.user import User
+from app.models.event import EventBuilder
+from app.models.runconfiguration import RunConfiguration
+from app.runstatemanager import RunStateManager
+from app.api.validation import Validation
+from app.models.playerrun import PlayerRun
+
 if cfg.test:
     from app.MockDBHelper import MockDBHelper as DBHelper
 else:
@@ -77,9 +80,18 @@ def api_add_encounter():
 @app.route("/api/v1/run", methods=['POST'])
 def api_new_run():
     data = request.get_json()
-    run_id = SM.new_run(current_user.get_id(), RunConfiguration())
-
+    run_id = SM.new_run(current_user.get_id(), PlayerRun.from_dict(data))
     return json.dumps({'runId': run_id})
+
+
+
+@app.route("/api/v1/user/register", methods=['POST'])
+def api_user_register():
+    data = request.get_json()
+    if True:
+        DB.create_user(User.new_user(data.get('username'), data.get('password')))
+        return "OK"
+
 
 @app.route("/api/v1/runs")
 def api_get_runs():
@@ -90,23 +102,26 @@ def api_get_runs():
 @app.route("/api/v1/event", methods=['POST'])
 def api_new_event():
     data = request.get_json()
-    run_id = data.get('runId')
-    event_type = data.get('type')
-    event_date = data.get('date')
-    event_data = data.get('event')
-    event = EventBuilder.createEvent(event_type, run_id, event_date, event_data)
-
-    if SM.add_event(current_user.get_id(), run_id, event):
-        return 'OK'
-    else:
+    data['userId'] = current_user.get_id()
+    if not Validation.event_dict_is_valid(data):
         return json.dumps({'error': 'could not save event'}), 400, {'ContentType': 'application/json'}
+
+    SM.add_event_from_dict(data)
+    return "OK"
+    # run_id = data.get('runId')
+    # event_type = data.get('type')
+    # event_date = data.get('date')
+    # event_data = data.get('event')
+    # event = EventBuilder.createEvent(event_type, run_id, event_date, event_data)
+
+
 
 @app.route("/api/v1/events/<run_id>")
 def api_get_events(run_id):
-    if not DB.valid_run_id(current_user.get_id(), int(run_id)):
-        return json.dumps({'error': 'run id is not valid'}), 400, {'ContentType': 'application/json'}
+    # if not DB.valid_run_id(current_user.get_id(), int(run_id)):
+    #     return json.dumps({'error': 'run id is not valid'}), 400, {'ContentType': 'application/json'}
 
-    return jsonify(DB.get_events(int(run_id)))
+    return jsonify([x.to_dict() for x in DB.get_events(str(run_id))])
 
 
 @app.route("/api/v1/encounters/<run_id>")
@@ -124,18 +139,36 @@ def api_delete_run(run_id):
 
 @app.route("/api/v1/state/<run_id>")
 def api_get_state(run_id):
+    index = request.args.get('index')
+    result = SM.get_run_state(str(run_id), index or -1)
+    return jsonify(result.to_dict())
 
-    if request.args.get('index') is not None:
-        return jsonify(DB.get_state_at_index(str(run_id), int(request.args['index'])))
-    else:
-        return jsonify(SM.get_current_state(current_user.get_id(), str(run_id)))
 
+@app.route("/api/v1/pokemon/drop")
+def api_drop_pokemon():
+    DB.drop_pokemon()
+    return "OK"
 
 @app.route("/api/v1/route/<routeId>")
 def api_route_info(routeId):
     return jsonify(DB.get_route(int(routeId)))
 
 
+@app.route("/admin")
+def admin():
+    return render_template('admin.html', pokemans=DB.get_all_pokemon())
+
+@app.route("/admin/pokemon", methods=['POST'])
+def add_pokemon():
+    name = request.form.get('name')
+    dexId = request.form.get('dexId')
+    print(name)
+    print(dexId)
+    if name is None or dexId is None:
+        pass
+    else:
+        DB.insert_pokemon_stub({'dexId': int(dexId), 'name': name})
+    return redirect(url_for('admin'))
 
 
 # Required by login module
