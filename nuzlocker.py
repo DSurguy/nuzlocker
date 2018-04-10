@@ -114,7 +114,14 @@ def api_new_event():
     # event_data = data.get('event')
     # event = EventBuilder.createEvent(event_type, run_id, event_date, event_data)
 
-
+@app.route("/api/v1/pokemon/<pokemon_id>")
+def api_get_pokemon(pokemon_id):
+    pokemon = DB.get_pokemon(pokemon_id)
+    if pokemon:
+        print(pokemon)
+        return jsonify(pokemon.to_dict())
+    else:
+        return "NOT FOUND"
 
 @app.route("/api/v1/events/<run_id>")
 def api_get_events(run_id):

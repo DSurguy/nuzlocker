@@ -33,19 +33,28 @@ class RunStateManager:
             print("run wasn't valid?")
             return self.invalid_run_response
 
+        print("REQUEST _ DATA _______")
+        print(request_data)
         if add_new_pokemon:
+            print("Adding new pokemon")
             nickname = request_data.get('nickname')
             if nickname is None:
                 return self.invalid_encounter_response
+            new_pokemon_id = self._db.create_player_pokemon(run_id, encounter.encountered_pokemon_id, nickname)
+            new_pokemon = Pokemon(new_pokemon_id, encounter.encountered_pokemon_id, nickname)
+            encounter.caught_pokemon_id = new_pokemon.uid
 
-            encounter.nickname = nickname
+        print("New encounter ------")
+        print(encounter.to_mongo())
 
         runstate = self._db.get_run_state(run_id)
-        event = EventBuilder.createEvent('encounter', runstate.event_index, user_id, run_id, datetime.datetime.utcnow(), {'encounter': encounter})
-        if runstate.apply_event(event):
-            self._db.insert_event(event)
+        event = EventBuilder.createEvent('encounter', runstate.event_index, user_id, run_id, datetime.datetime.utcnow(), {'encounter': encounter.to_mongo()})
 
-        return SaveResponse(success=True, id=encounter.id, message=None)
+        if runstate.apply_event(event):
+            new_id = self._db.insert_event(event)
+            return SaveResponse(success=True, id=str(new_id), message=None)
+
+        return self.invalid_encounter_response
         # if (self.add_event(user_id, run_id, event, runstate)):
         # if runstate.apply_event(event):
         #     self._db.add_encounter(encounter)
@@ -88,11 +97,17 @@ class RunStateManager:
         print("Getting state")
         runstate = RunState()
         events = self._db.get_events(run_id, index)
+        pokemon = []
         for event in events:
+            if event.type == 'encounter':
+                pokemon.append(event.encounter.caught_pokemon_id)
             if runstate.apply_event(event):
                 print("Event applied successfully")
             else:
                 print("Could not apply event %d", event.order)
                 break
+        print(pokemon)
+        pokemon = [self._db.get_pokemon(x) for x in pokemon]
+        print(pokemon)
 
         return runstate

@@ -7,6 +7,11 @@ class Pokemon:
     def new(id, nickname):
         return Pokemon(str(uuid.uuid4()), id, nickname)
 
+    @staticmethod
+    def from_dict(dict):
+        return Pokemon(str(dict['_id']), dict['dexId'], dict['nickname'], dict['alive'])
+
+
     def __init__(self, uid, dex_id, nickname, alive=True):
         self.uid = uid
         self.dex_id = dex_id

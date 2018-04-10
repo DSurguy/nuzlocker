@@ -3,7 +3,7 @@ from pymongo import MongoClient
 
 from app.api.user import User
 from app.models.event import EventBuilder
-from app.models.pokemon import PokemonStub
+from app.models.pokemon import PokemonStub, Pokemon
 from app.models.playerrun import PlayerRun
 from app.runstate import RunState
 
@@ -17,7 +17,7 @@ class MongoDbHelper:
         self._client = MongoClient(host, port)
         self._db = self._client['nuzlocker']
         self._pokemon = self._db['POKEMON_DATA']
-        self._run_pokemon = self._db['RUN_POKEMON']
+        self._player_pokemon = self._db['PLAYER_POKEMON']
         self._run = self._db['RUN']
         self._event = self._db['EVENT']
         self._encounter = self._db['ENCOUNTER']
@@ -84,8 +84,15 @@ class MongoDbHelper:
             events = self._event.find({'runId': run_id, 'order': {'$lt': index}}).sort('order')
         else:
             events = self._event.find({'runId': run_id}).sort('order')
-        print(events)
+
         return [EventBuilder.createEvent(x['type'], x['order'], x['userId'], x['runId'], x['date'], x['event']) for x in events]
+
+
+    def get_pokemon(self, pokemon_id):
+        pokemon = self._player_pokemon.find_one({'_id': ObjectId(pokemon_id)})
+        if pokemon is not None:
+            return Pokemon.from_dict(pokemon)
+        return None
 
 
     def insert_event(self, event):
@@ -104,6 +111,9 @@ class MongoDbHelper:
 
     def get_state(self, run_id):
         pass
+
+    def create_player_pokemon(self, run_id, dex_id, nickname):
+        return self._player_pokemon.insert_one({'runId': run_id, 'dexId': dex_id, 'nickname': nickname, 'alive': True}).inserted_id
 
     def get_encounters(self, run_id):
         events = self._event.find({'runId': run_id, 'type': 'encounter'}).sort('order')

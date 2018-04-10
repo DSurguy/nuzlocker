@@ -25,6 +25,7 @@ class RunState:
         self.event_index = len(self.events)
         self._id = id
         self._user = user
+        self.pokemon = {}
 
     def apply_event(self, event):
         if event.apply(self):
@@ -33,6 +34,11 @@ class RunState:
             return True
         return False
 
+    # Replaces pokemon ids with pokemon objects
+    def substitute_pokemon(self):
+        pass
+
+    def add_pokemon(self, pokemon):
 
     def to_dict(self):
         return {'party': [x.to_mongo() for x in self.party],
@@ -86,6 +92,7 @@ class RunState:
         return None
 
     def add_encounter(self, encounter):
+        print(encounter)
         if encounter.route_id not in self.seen:
             self.seen[encounter.route_id] = []
 
@@ -93,6 +100,6 @@ class RunState:
             self.seen[encounter.route_id].append(encounter.get_pokemon_id())
 
         if encounter.outcome == OutcomeType.CAUGHT:
-            self.add_new_pokemon(Pokemon(encounter.pokemon_uid, encounter.get_pokemon_id(), encounter.nickname))
+            self.add_new_pokemon(encounter.caught_pokemon_id)
 
         return True

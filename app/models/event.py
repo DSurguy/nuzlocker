@@ -39,6 +39,8 @@ class EncounterEvent(Event):
 
     def __init__(self, order, user_id, run_id, date, data):
         super().__init__(order, user_id, run_id, date)
+        print("CREATING ENCOUNTER -------")
+        print(data)
         encounter = data.get('encounter')
         if isinstance(encounter, dict):
             encounter = Encounter.from_json(encounter)
@@ -50,8 +52,13 @@ class EncounterEvent(Event):
 
     def to_dict(self):
         base = super().to_dict()
-        print(self.encounter)
         base['event'] = {'encounter': self.encounter.to_dict()}
+        return base
+
+    def to_mongo(self):
+        base = super().to_dict()
+        print(self.encounter)
+        base['event'] = {'encounter': self.encounter.to_mongo()}
         return base
 
 class MilestoneEvent(Event):
@@ -77,10 +84,12 @@ class EventBuilder:
 
     @staticmethod
     def createEvent(eventType, order, user_id, run_id, date, data):
+        print("NEW EVENT _________")
+        print(data)
         return EventBuilder._type_map[eventType.lower()](order, user_id, run_id, date, data)
 
     @staticmethod
     def create_from_dict(order, event_dict):
-        print(order)
+        print("FROM JSON EVENT _________")
         print(event_dict)
         return EventBuilder.createEvent(event_dict['type'], order, event_dict['userId'], event_dict['runId'], event_dict['date'], event_dict['event'])

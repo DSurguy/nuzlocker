@@ -26,7 +26,7 @@ for run in run.find():
     print(run)
 
 
-# event.drop()
+event.drop()
 
 for event in event.find():
     print(event)

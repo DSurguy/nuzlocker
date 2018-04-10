@@ -5,31 +5,39 @@ from app.models.outcome import OutcomeType
 
 class Encounter:
 
-    def __init__(self, route_id, pokemon_id, outcome):
+    def __init__(self, route_id, pokemon_id, outcome, caught_pokemon_id=None):
         self.route_id = route_id
-        self.pokemon_id = pokemon_id
+        self.encountered_pokemon_id = pokemon_id
         self.outcome = outcome
-        self.id = str(uuid.uuid4())
-        if self.outcome == OutcomeType.CAUGHT:
-            self.pokemon_uid = str(uuid.uuid4())
+        self.caught_pokemon_id = caught_pokemon_id
+
+
 
     def get_pokemon_id(self):
-        return self.pokemon_id
+        return self.encountered_pokemon_id
 
     @staticmethod
     def from_json(data):
+        print(data)
         route_id = data.get('routeId')
         pokemon_id = data.get('pokemonId')
         outcome = OutcomeType(data.get('outcome'))
-        return Encounter(route_id, pokemon_id, outcome)
+        caught_pokemon_id = data.get('caughtPokemon')
+        return Encounter(route_id, pokemon_id, outcome, caught_pokemon_id)
 
     def is_valid(self):
-        if self.route_id is None or self.pokemon_id is None or self.outcome is None:
-            return False
         return True
+        # if self.route_id is None or self.pokemon_id is None or self.outcome is None:
+        #     return False
+        # return True
 
     def to_dict(self):
-        return {'routeId': self.route_id, 'outcome': self.outcome.value, 'pokemonId': self.pokemon_id}
+        base = {'routeId': self.route_id, 'outcome': self.outcome.value, 'encounteredPokemonId': self.encountered_pokemon_id}
+        if self.caught_pokemon_id is not None:
+            base['caughtPokemon'] = self.caught_pokemon_id
+        return base
 
     def to_mongo(self):
+        base = self.to_dict()
+        print(base)
         return {key: str(value) for key, value in self.to_dict().items()}
