@@ -1,0 +1,20 @@
+.eventCreator{
+  .modal-submit-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255,255,255,0.75);
+    z-index: 1;
+    i{
+      display: block;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      margin: 50% auto 0 auto;
+      transform: translateY(-50%);
+      color: #777;
+    }
+  }
+}

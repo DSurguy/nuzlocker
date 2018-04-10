@@ -1,0 +1,17 @@
+.nzModal-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.3);
+}
+.nzModal-content {
+  background-color: #fff;
+  width: 480px;
+  max-height: calc(100% - 100px);
+  min-height: 480px;
+  margin: 50px auto 0 auto;
+  display: block;
+  position: relative;
+}

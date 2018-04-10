@@ -7,7 +7,6 @@ import './static/font-awesome/scss/fa-solid.scss';
 
 ReactDOM.render(
   <div className="container">
-  <div className="fas fa-angle-up"></div>
     <EventFeed/>
   </div>,
   document.getElementById('root')

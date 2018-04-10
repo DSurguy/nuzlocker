@@ -7,6 +7,7 @@ let _ = {
   extend,
   each
 };
+import fetch from 'better-fetch';
 
 let eventTypes = [{
   id: '0',
@@ -31,16 +32,20 @@ export default class EventFeed extends React.Component {
     }
 
     _.each([
-      'createEvent'
+      'updateEventList'
     ], (funcName)=>{
       this[funcName] = this[funcName].bind(this);
     })
   }
 
+  componentDidMount(){
+    this.updateEventList();
+  }
+
   render(){
     return (
       <div className="eventFeed">
-        <EventCreator eventTypes={eventTypes} createEvent={this.createEvent}/>
+        <EventCreator eventTypes={eventTypes} updateEventList={this.updateEventList}/>
         <EventHistory events={this.state.events} />
       </div>
     )
@@ -49,12 +54,23 @@ export default class EventFeed extends React.Component {
   /**
    * Exposed Actions
    */
-  createEvent(newEvent){
-    console.log(newEvent);
-    this.setState({
-      events: this.state.events.concat([_.extend({
-        id: this.state.events.length
-      }, newEvent)])
+  updateEventList(){
+    return fetch('http://localhost:5000/api/v1/encounters', {
+      headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      }
     })
+    .then(response=>response.json())
+    .then((jsonData)=>{
+      return new Promise((resolve)=>{
+        this.setState({
+          events: jsonData
+        }, resolve)
+      })
+    })
+    .catch((err)=>{
+      console.error(err);
+    });
   }
 }
