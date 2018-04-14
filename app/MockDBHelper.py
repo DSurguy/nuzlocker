@@ -113,7 +113,7 @@ class MockDBHelper:
 
     def get_route(self, route_id):
         route = [x for x in ROUTES if x['id'] == route_id]
-        if len(route) > 0
+        if len(route) > 0:
             return [{'id': base['id'], 'name': base['name']} for base in [self.get_pokemon_base(x) for x in route[0]['pokemon']]]
         else:
             return {}
