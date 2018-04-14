@@ -19,7 +19,7 @@ export default class RunList extends React.Component{
   render(){
     return (<div className="runList">
       <div className="runList__controls">
-        <button type="button"><i className="fas fa-plus"></i> New Run</button>
+        <button type="button" className="btn btn-primary"><i className="fas fa-plus"></i> New Run</button>
       </div>
       <div className="runList__runs">
         <Route exact path={`${this.props.match.url}`} render={this.renderContent}/>

@@ -1,5 +1,7 @@
 import React from 'react'
 
+import './AuthedHeader.scss';
+
 export default class AuthedHeader extends React.Component{
   constructor(props){
     super(props);
@@ -12,7 +14,7 @@ export default class AuthedHeader extends React.Component{
   }
 
   render(){
-    return (<div className="header">
+    return (<div className="authedHeader">
       Yo this is a header and you are logged in
     </div>)
   }

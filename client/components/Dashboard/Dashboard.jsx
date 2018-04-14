@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Link } from "react-router-dom"
+import { Route, Link } from "react-router-dom"
 
 import SideMenu from '../SideMenu/SideMenu.jsx'
 import AuthedHeader from '../AuthedHeader/AuthedHeader.jsx'
@@ -18,17 +18,20 @@ export default class Dashboard extends React.Component{
     })
   }
 
+  componentWillMount(){
+    //check login
+  }
+
   render(){
-    return (<BrowserRouter>
-      <div className="dashboard">
-        <AuthedHeader />
-        <SideMenu />
-        <div className="pageContent">
-          <Route path="/dashboard" component={DashboardContent} />
-          <Route path="/runs" component={RunList} />
-        </div>
+    return (<div className="dashboard">
+      <AuthedHeader />
+      <SideMenu />
+      <div className="pageContent container">
+        {/* we omit the '/' because that's the base path here */}
+        <Route exact path={`${this.props.match.url}dashboard`} component={DashboardContent} />
+        <Route path={`${this.props.match.url}runs`} component={RunList} />
       </div>
-    </BrowserRouter>)
+    </div>)
   }
 }
 

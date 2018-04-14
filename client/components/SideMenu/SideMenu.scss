@@ -1,0 +1,10 @@
+@import '../../shared/config.scss';
+
+.SideMenu {
+  position: fixed;
+  left: 0;
+  top: $header-height;
+  bottom: 0;
+  width: 200px;
+  background-color: #efefef;
+}

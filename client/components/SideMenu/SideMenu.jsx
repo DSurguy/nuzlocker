@@ -1,5 +1,7 @@
 import React from 'react'
 
+import './SideMenu.scss';
+
 export default class SideMenu extends React.Component{
   constructor(props){
     super(props);
@@ -12,7 +14,7 @@ export default class SideMenu extends React.Component{
   }
 
   render(){
-    return (<div className="sidemenu">
+    return (<div className="SideMenu">
 
     </div>)
   }
