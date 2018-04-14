@@ -1,22 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
-import './SideMenu.scss';
-
-export default class SideMenu extends React.Component{
+export default class HomePage extends React.Component{
   constructor(props){
     super(props);
 
     this.state = {};
-
+    
     ([]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this)
     })
   }
 
   render(){
-    return (<div className="SideMenu">
-      <Link to="/runs">Runs</Link>
+    return (<div className="homePage">
+      WELCOME TO THE HOMEPAGE
     </div>)
   }
 }

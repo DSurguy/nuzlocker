@@ -5,7 +5,7 @@ import SideMenu from '../SideMenu/SideMenu.jsx'
 import AuthedHeader from '../AuthedHeader/AuthedHeader.jsx'
 import RunList from '../RunList/RunList.jsx'
 
-export default class Dashboard extends React.Component{
+export default class AuthedApp extends React.Component{
   constructor(props){
     super(props);
 
@@ -23,18 +23,18 @@ export default class Dashboard extends React.Component{
   }
 
   render(){
-    return (<div className="dashboard">
+    return (<div className="authedApp">
       <AuthedHeader />
       <SideMenu />
       <div className="pageContent container">
         {/* we omit the '/' because that's the base path here */}
-        <Route exact path={`${this.props.match.url}dashboard`} component={DashboardContent} />
+        <Route exact path={`${this.props.match.url}dashboard`} component={AuthedAppContent} />
         <Route path={`${this.props.match.url}runs`} component={RunList} />
       </div>
     </div>)
   }
 }
 
-function DashboardContent(){
+function AuthedAppContent(){
   return (<React.Fragment>I AM DASHBOARD CONTENT</React.Fragment>)
 }
