@@ -16,7 +16,7 @@ app = Flask(__name__, static_folder='dist/public')
 app.secret_key = 'IniR3SCXKFhl87zICvxDWFG5BGxE9GC903V4jXkn7UzO1MwMuwh6ipwVca++yoQZTgUP/V0Nwrp4WyFwdrclGbonOeSbzBQhFEJp'
 login_manager = LoginManager(app)
 DB = DBHelper()
-CORS(app)
+CORS(app, supports_credentials=True)
 PH = PasswordHelper()
 SM = RunStateManager()
 
@@ -35,7 +35,7 @@ def serve(path):
         else:
             return send_from_directory("dist/public", 'index.html')
 
-@app.route("/login", methods=['POST'])
+@app.route("/api/v1/login", methods=['POST'])
 def login():
     # email = request.form.get('email')
     # password = request.form.get('password')

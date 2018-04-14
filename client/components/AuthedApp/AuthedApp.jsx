@@ -10,7 +10,8 @@ export default class AuthedApp extends React.Component{
     super(props);
 
     this.state = {
-      menuOpen: false
+      menuOpen: false,
+      authCheckComplete: false
     };
 
     ([]).forEach((funcName)=>{
@@ -18,14 +19,32 @@ export default class AuthedApp extends React.Component{
     })
   }
 
-  componentWillMount(){
-    //check login
+  componentDidMount(){
+    fetch('http://localhost:5000/api/v1/login', {
+      body: JSON.stringify({}),
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      }
+    })
+    .then(response=>{
+      if( response.ok ){
+        this.setState({
+          authCheckComplete: true
+        })
+      }
+    })
+    .catch((err)=>{
+      console.error(err);
+    });
   }
 
   render(){
+    if( !this.state.authCheckComplete ) return null;
     return (<div className="authedApp">
       <AuthedHeader />
-      <SideMenu />
+      <SideMenu is-open={this.state.menuOpen} />
       <div className="pageContent container">
         {/* we omit the '/' because that's the base path here */}
         <Route exact path={`${this.props.match.url}dashboard`} component={AuthedAppContent} />

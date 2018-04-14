@@ -15,7 +15,7 @@ export default class SideMenu extends React.Component{
   }
 
   render(){
-    return (<div className="SideMenu">
+    return (<div className={`SideMenu${this.props.isOpen ? ' open' : ''}`}>
       <Link to="/runs">Runs</Link>
     </div>)
   }
