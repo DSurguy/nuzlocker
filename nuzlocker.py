@@ -1,18 +1,10 @@
 import json
 import os
 
-from flask import Flask, request, send_from_directory
-from flask import jsonify
-<<<<<<< HEAD
+from flask import Flask, request, send_from_directory, jsonify
 from flask_cors import CORS
-from models.encounter import Encounter
-from models.pokemon import Pokemon
-from models.route import Route
-from cache.InMemoryCache import InMemoryCache, CacheEntry
-=======
 from flask_login import LoginManager, login_user, logout_user, current_user
 from app.models.encounter import Encounter
->>>>>>> develop
 
 from app.MockDBHelper import MockDBHelper as DBHelper
 from app.passwordhelper import PasswordHelper
@@ -24,12 +16,9 @@ app = Flask(__name__, static_folder='dist/public')
 app.secret_key = 'IniR3SCXKFhl87zICvxDWFG5BGxE9GC903V4jXkn7UzO1MwMuwh6ipwVca++yoQZTgUP/V0Nwrp4WyFwdrclGbonOeSbzBQhFEJp'
 login_manager = LoginManager(app)
 DB = DBHelper()
-<<<<<<< HEAD
 CORS(app)
-=======
 PH = PasswordHelper()
 SM = RunStateManager()
->>>>>>> develop
 
 '''
 # Forms and HTML routes
@@ -123,13 +112,9 @@ def api_get_state(run_id):
 def api_route_info(routeId):
     return jsonify(DB.get_route(int(routeId)))
 
-<<<<<<< HEAD
 @app.route("/api/v1/routes")
-def routes():
+def api_routes():
     return jsonify(DB.get_routes())
-=======
->>>>>>> develop
-
 
 
 # Required by login module
