@@ -24,8 +24,8 @@ export default class Dashboard extends React.Component{
         <AuthedHeader />
         <SideMenu />
         <div className="pageContent">
-          <Route exact path="/dashboard" component={DashboardContent} />
-          <Route exact path="/runs" component={RunList} />
+          <Route path="/dashboard" component={DashboardContent} />
+          <Route path="/runs" component={RunList} />
         </div>
       </div>
     </BrowserRouter>)
