@@ -5,6 +5,8 @@ import SideMenu from '../SideMenu/SideMenu.jsx'
 import AuthedHeader from '../AuthedHeader/AuthedHeader.jsx'
 import RunList from '../RunList/RunList.jsx'
 
+import api from '../../services/api/api.js';
+
 export default class AuthedApp extends React.Component{
   constructor(props){
     super(props);
@@ -20,20 +22,18 @@ export default class AuthedApp extends React.Component{
   }
 
   componentDidMount(){
-    fetch('http://localhost:5000/api/v1/login', {
-      body: JSON.stringify({}),
+    api.fetch('/login', {
+      body: {},
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         'accept': 'application/json'
       }
     })
-    .then(response=>{
-      if( response.ok ){
-        this.setState({
-          authCheckComplete: true
-        })
-      }
+    .then(responseData=>{
+      this.setState({
+        authCheckComplete: true
+      })
     })
     .catch((err)=>{
       console.error(err);

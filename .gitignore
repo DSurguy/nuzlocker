@@ -59,6 +59,7 @@ typings/
 
 # dotenv environment variables file
 .env
+.env*.json
 
 # python env folder
 .nuzlocker_env
