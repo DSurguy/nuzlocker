@@ -17,12 +17,8 @@ function loadMockData(){
 function mockFetch(resourcePath, fetchConfig){
   return new Promise((resolve, reject)=>{
     doMockAction(resourcePath, fetchConfig.method, fetchConfig.body)
-    .then((response) => {
-      resolve(response.data)
-    })
-    .catch((response) => {
-      reject(response.error)
-    })
+    .then(resolve)
+    .catch(reject)
   })
 }
 

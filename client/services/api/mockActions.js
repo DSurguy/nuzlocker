@@ -15,7 +15,7 @@ export default {
   '^/run$': {
     'POST': function (mockState, fetchData={}){
       let nextId = 0;
-      for( let run of mockState.runs ){
+      for( let run of (mockState.runs||[]) ){
         if( run.id === fetchData.id ) return Promise.reject({
           status: 400,
           message: 'Duplicate Run ID, use PUT instead'
@@ -24,6 +24,7 @@ export default {
       }
       let newRun = {
         id: nextId,
+        userId: mockState.user.id,
         events: [],
         name: fetchData.name||`Run ${nextId}`,
         game: fetchData.game||'red'
@@ -40,7 +41,7 @@ export default {
   '^/run/[0-9]+$': {
     'PUT': function (mockState, fetchData){
       let maxId = 0;
-      for( let run of mockState.runs ){
+      for( let run of (mockState.runs||[]) ){
         if( run.id === fetchData.id ){
           run.name = fetchData.name||run.name
           return Promise.resolve({
@@ -57,7 +58,7 @@ export default {
     },
     'GET': function (mockState){
       let maxId = 0;
-      for( let run of mockState.runs ){
+      for( let run of (mockState.runs||[]) ){
         if( run.id === fetchData.id ) return Promise.resolve({
           status: 200,
           data: run
@@ -73,7 +74,7 @@ export default {
     'GET': function (mockState){
       return Promise.resolve({
         status: 200,
-        data: (mockState.runs||[]).filter(run=>run.userId==mockState.currentUser.id)
+        data: (mockState.runs||[]).filter(run=>run.userId==mockState.user.id)
       })
     }
   }
