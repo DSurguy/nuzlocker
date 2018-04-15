@@ -1,7 +1,5 @@
 import React from 'react'
 
-import fetch from 'better-fetch';
-
 export default class RunEditor extends React.Component{
   constructor(props){
     super(props);
@@ -41,16 +39,14 @@ export default class RunEditor extends React.Component{
 
   fetchRunEvents(runId){
     return fetch(`http://localhost:5000/api/v1/events/${runId}`, {
-      headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json'
-      }
+      credentials: 'include'
     })
     .then(response=>response.json())
     .then((jsonData)=>{
       return new Promise((resolve)=>{
         this.setState({
-          events: jsonData
+          events: jsonData,
+          loaded: true
         }, resolve)
       })
     })
