@@ -16,7 +16,9 @@ export default class AuthedApp extends React.Component{
       authCheckComplete: false
     };
 
-    ([]).forEach((funcName)=>{
+    ([
+      'toggleMenuState'
+    ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this)
     })
   }
@@ -43,14 +45,20 @@ export default class AuthedApp extends React.Component{
   render(){
     if( !this.state.authCheckComplete ) return null;
     return (<div className="authedApp">
-      <AuthedHeader />
-      <SideMenu is-open={this.state.menuOpen} />
+      <AuthedHeader toggleMenu={this.toggleMenuState}/>
+      <SideMenu open={this.state.menuOpen} />
       <div className="pageContent container">
         {/* we omit the '/' because that's the base path here */}
         <Route exact path={`${this.props.match.url}dashboard`} component={AuthedAppContent} />
         <Route path={`${this.props.match.url}runs`} component={RunList} />
       </div>
     </div>)
+  }
+  
+  toggleMenuState(){
+    this.setState({
+      menuOpen: !this.state.menuOpen
+    })
   }
 }
 
