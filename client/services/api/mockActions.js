@@ -77,5 +77,25 @@ export default {
         data: (mockState.runs||[]).filter(run=>run.userId==mockState.user.id)
       })
     }
+  },
+  '^/data/?$': {
+    'GET': function (mockState){
+      return Promise.resolve({
+        //Return a static list of the data endpoints available
+        status: 200,
+        data: [
+          'pokemon'
+        ]
+      })
+    }
+  },
+  '^/data/pokemon/?$': {
+    'GET': function (mockState){
+      //Return a static list of all supported pokemon
+      return Promise.resolve({
+        status: 200,
+        data: require('../../data/pokemon.json') //thanks webpack
+      })
+    }
   }
 }
