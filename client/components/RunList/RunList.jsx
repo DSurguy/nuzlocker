@@ -143,7 +143,13 @@ export default class RunList extends React.Component{
       }
     })
     .then(()=>{
-      this.getUpdatedRunList()
+      this.setState(_.merge({}, this.state, {
+        newRun: {
+          modalOpen: false
+        }
+      }), ()=>{;
+        this.getUpdatedRunList()
+      });
     })
     .catch((err)=>{
       console.error(err);
