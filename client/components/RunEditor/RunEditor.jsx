@@ -1,4 +1,5 @@
 import React from 'react'
+import EventCreator from '../EventCreator/EventCreator.jsx'
 
 import api from '../../services/api/api.js'
 
@@ -12,7 +13,8 @@ export default class RunEditor extends React.Component{
 
     ([
       'fetchRun',
-      'renderRun'
+      'renderRun',
+      'onNewEventClick'
     ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this)
     })
@@ -25,11 +27,15 @@ export default class RunEditor extends React.Component{
   render(){
     return (<div className="runEditor">
       I am a run editor I guess, ID: {this.props.match.params.id}
+      <div className="runEditor__runControls">
+        <button onClick={this.onNewEventClick}><i className="fas fa-plus"></i> New Event</button>
+      </div>
       {this.state.run === undefined ? (
         <div className="runEditor__loader">
           <i className="fas fa-sync fa-spin"></i>
         </div>
       ) : this.renderRun()}
+      <EventCreator active={this.state.eventCreatorActive} />
     </div>)
   }
 
@@ -57,6 +63,13 @@ export default class RunEditor extends React.Component{
     })
     .catch((err)=>{
       console.error(err);
+    })
+  }
+
+  onNewEventClick(){
+    //do the thing
+    this.setState({
+      eventCreatorActive: true
     })
   }
 }

@@ -32,6 +32,14 @@ export default {
         id: nextId,
         userId: mockState.user.id,
         events: [],
+        state: {
+          bank: [],
+          party: [],
+          pokemon: {},
+          goalStatus: [],
+          routeStatus: {}
+        },
+        goals: [],
         name: fetchData.name||`Run ${nextId}`,
         game: fetchData.game||'red'
       }
