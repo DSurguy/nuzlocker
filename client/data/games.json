@@ -1,0 +1,13 @@
+[
+  {
+    "id": 0,
+    "generation": 1,
+    "shortName": "red",
+    "name": "Pokemon Red Version"
+  }, {
+    "id": 1,
+    "generation": 1,
+    "shortName": "blue",
+    "name": "Pokemon Blue Version"
+  }
+]
