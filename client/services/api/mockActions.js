@@ -89,12 +89,30 @@ export default {
       })
     }
   },
+  '^/data/games/?$': {
+    'GET': function (mockState){
+      //Return a static list of all supported pokemon
+      return Promise.resolve({
+        status: 200,
+        data: require('../../data/games.json') //thanks webpack
+      })
+    }
+  },
   '^/data/pokemon/?$': {
     'GET': function (mockState){
       //Return a static list of all supported pokemon
       return Promise.resolve({
         status: 200,
         data: require('../../data/pokemon.json') //thanks webpack
+      })
+    }
+  },
+  '^/data/routes/?$': {
+    'GET': function (mockState){
+      //Return a static list of all supported pokemon
+      return Promise.resolve({
+        status: 200,
+        data: require('../../data/routes.json') //thanks webpack
       })
     }
   }
