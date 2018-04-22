@@ -35,6 +35,6 @@ export default class Login extends React.Component{
 
   onFormSubmit(e){
     e.preventDefault();
-    e.stopPropagation();
+    window.location = '/dashboard'
   }
 }

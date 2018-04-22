@@ -24,8 +24,11 @@ function mockFetch(resourcePath, fetchConfig){
 
 function doMockAction(resourcePath, fetchMethod='GET', fetchData){
   for( let route in mockActions ){
-    if( (new RegExp(route)).test(resourcePath) && mockActions[route][fetchMethod] ){
-      return mockActions[route][fetchMethod](mockState, fetchData)
+    let routeRegex = new RegExp(route);
+    let regexTestResult = routeRegex.exec(resourcePath);
+    if( regexTestResult && mockActions[route][fetchMethod] ){
+      let params = Array.prototype.slice.apply(regexTestResult, [1]);
+      return mockActions[route][fetchMethod](mockState, fetchData, params)
       .then((response)=>{
         if( response.stateModified ) localStorage.setItem('mockState', JSON.stringify(mockState))
         return response.data;

@@ -44,9 +44,6 @@ export default class RunList extends React.Component{
 
   render(){
     return (<div className="runList">
-      <div className="runList__controls">
-        <button type="button" className="btn btn-primary" onClick={this.onNewRunButtonClick}><i className="fas fa-plus"></i> New Run</button>
-      </div>
       <div className="runList__runs">
         <Route exact path={`${this.props.match.url}`} render={this.renderContent}/>
         <Route path={`${this.props.match.url}/:id`} component={RunEditor}/>
@@ -76,9 +73,12 @@ export default class RunList extends React.Component{
 
   renderContent(){
     return (<div className="runList__runs">
+      <div className="runList__controls">
+        <button type="button" className="btn btn-primary" onClick={this.onNewRunButtonClick}><i className="fas fa-plus"></i> New Run</button>
+      </div>
       {this.state.runs.map((run)=>{
         return (<div key={run.id} className="runList__run">
-          {run.name} - game:{run.game}
+          <a href={`/runs/${run.id}`}>{run.name} - game:{run.game}</a>
         </div>)
       })}
     </div>)
@@ -134,7 +134,7 @@ export default class RunList extends React.Component{
   
   onNewRunFormSubmit(e){
     e.preventDefault();
-    api.fetch('/run', {
+    api.fetch('/runs', {
       method: 'POST',
       body: this.state.newRun.formData,
       headers: {

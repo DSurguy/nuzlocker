@@ -1,57 +1,62 @@
 import React from 'react'
 
+import api from '../../services/api/api.js'
+
 export default class RunEditor extends React.Component{
   constructor(props){
     super(props);
 
     this.state = {
-      events: undefined,
-      loaded: false
+      run: undefined
     };
 
     ([
-      'fetchRunEvents'
+      'fetchRun',
+      'renderRun'
     ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this)
     })
   }
 
   componentDidMount(){
-    this.fetchRunEvents(this.props.match.params.id);
+    this.fetchRun(this.props.match.params.id);
   }
 
   render(){
-    if( !this.state.loaded ) return (<div><i className="fas fa-sync fa-spin"></i></div>)
     return (<div className="runEditor">
       I am a run editor I guess, ID: {this.props.match.params.id}
-      {this.state.events === undefined 
-        ? (<div className="runEditor__loader">
+      {this.state.run === undefined ? (
+        <div className="runEditor__loader">
           <i className="fas fa-sync fa-spin"></i>
-        </div>)
-        : (<div className="runEditor__eventList">
-          {this.state.events.map((event)=>{
-            return (<div className="runEditor__event">I AM EVENT</div>);
-          })}
-        </div>)
-      }
+        </div>
+      ) : this.renderRun()}
     </div>)
   }
 
-  fetchRunEvents(runId){
-    return fetch(`http://localhost:5000/api/v1/events/${runId}`, {
-      credentials: 'include'
+  renderRun(){
+    return (
+      <div className="runEditor__eventList">
+        {this.state.run.events.map((event)=>{
+          return (<div className="runEditor__event">I AM EVENT</div>);
+        })}
+      </div>
+    )
+  }
+
+  fetchRun(runId){
+    api.fetch(`/runs/${runId}`, {
+      headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      }
     })
-    .then(response=>response.json())
-    .then((jsonData)=>{
-      return new Promise((resolve)=>{
-        this.setState({
-          events: jsonData,
-          loaded: true
-        }, resolve)
+    .then((run)=>{
+      this.setState({
+        run: run
       })
     })
     .catch((err)=>{
       console.error(err);
-    });
+    })
   }
 }

@@ -1,6 +1,6 @@
 export default {
-  '^/login$': {
-    'POST': function (mockState, fetchData={}){
+  "^/login$": {
+    "POST": function (mockState, fetchData={}){
       mockState.user = {
         id: 1,
         username: 'testUser'
@@ -12,8 +12,14 @@ export default {
       })
     }
   },
-  '^/run$': {
-    'POST': function (mockState, fetchData={}){
+  "^/runs$": {
+    "GET": function (mockState){
+      return Promise.resolve({
+        status: 200,
+        data: (mockState.runs||[]).filter(run=>run.userId==mockState.user.id)
+      })
+    },
+    "POST": function (mockState, fetchData={}){
       let nextId = 0;
       for( let run of (mockState.runs||[]) ){
         if( run.id === fetchData.id ) return Promise.reject({
@@ -38,11 +44,11 @@ export default {
       })
     }
   },
-  '^/run/[0-9]+$': {
-    'PUT': function (mockState, fetchData){
+  "^/runs/([0-9]+)$": {
+    "PUT": function (mockState, fetchData, params){
       let maxId = 0;
       for( let run of (mockState.runs||[]) ){
-        if( run.id === fetchData.id ){
+        if( run.id === params[0] ){
           run.name = fetchData.name||run.name
           return Promise.resolve({
             status: 200,
@@ -56,10 +62,10 @@ export default {
         message: 'Run not found'
       })
     },
-    'GET': function (mockState){
+    'GET': function (mockState, fetchData, params){
       let maxId = 0;
       for( let run of (mockState.runs||[]) ){
-        if( run.id === fetchData.id ) return Promise.resolve({
+        if( run.id === parseInt(params[0]) ) return Promise.resolve({
           status: 200,
           data: run
         })
@@ -70,16 +76,8 @@ export default {
       })
     }
   },
-  '^/runs$': {
-    'GET': function (mockState){
-      return Promise.resolve({
-        status: 200,
-        data: (mockState.runs||[]).filter(run=>run.userId==mockState.user.id)
-      })
-    }
-  },
-  '^/data/?$': {
-    'GET': function (mockState){
+  "^/data/?$": {
+    "GET": function (mockState){
       return Promise.resolve({
         //Return a static list of the data endpoints available
         status: 200,
@@ -89,8 +87,8 @@ export default {
       })
     }
   },
-  '^/data/games/?$': {
-    'GET': function (mockState){
+  "^/data/games/?$": {
+    "GET": function (mockState){
       //Return a static list of all supported pokemon
       return Promise.resolve({
         status: 200,
@@ -98,8 +96,8 @@ export default {
       })
     }
   },
-  '^/data/pokemon/?$': {
-    'GET': function (mockState){
+  "^/data/pokemon/?$": {
+    "GET": function (mockState){
       //Return a static list of all supported pokemon
       return Promise.resolve({
         status: 200,
@@ -107,8 +105,8 @@ export default {
       })
     }
   },
-  '^/data/routes/?$': {
-    'GET': function (mockState){
+  "^/data/routes/?$": {
+    "GET": function (mockState){
       //Return a static list of all supported pokemon
       return Promise.resolve({
         status: 200,
