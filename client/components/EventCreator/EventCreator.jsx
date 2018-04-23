@@ -2,6 +2,11 @@ import React from 'react'
 import NzModal from '../shared/NzModal/NzModal.jsx'
 import EventEncounterForm from '../EventDataForms/EventEncounterForm/EventEncounterForm.jsx'
 
+import extend from 'lodash/extend';
+let _ = {
+  extend
+}
+
 import './EventCreator.scss';
 
 export default class EventCreator extends React.Component {
@@ -10,16 +15,17 @@ export default class EventCreator extends React.Component {
 
     this.state = {
       formData: {
-        currentPage: 0
+        currentPage: 0,
+        pages: []
       }
     };
 
     ([
       'renderModalContent',
       'renderEventTypePage',
-      'onEventTypePageSubmit',
       'renderEventDataPage',
-      'onEventDataPageSubmit'
+      'onEventPageSubmit',
+      'onEventPageCancel'
     ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this);
     })
@@ -56,28 +62,18 @@ export default class EventCreator extends React.Component {
     }]
 
     return (<div className="eventCreator__typePage">
+      <h4>Select An Event Type</h4>
       {types.map((type)=>{
-        return (<div key={type.id} className="eventCreator__typePage__type" onClick={this.onEventTypePageSubmit.bind(this, [type.id])}>
+        return (<div key={type.id} className="eventCreator__typePage__type" onClick={this.onEventPageSubmit.bind(this, {eventType: type.id})}>
           <h5>{type.label}</h5>
           <p>{type.description}</p>
         </div>)
       })}
     </div>)
   }
-  onEventTypePageSubmit(typeId){
-    this.setState({
-      formData: {
-        0: {
-          eventType: typeId
-        },
-        currentPage: 1
-      }
-    })
-  }
-
   renderEventDataPage(){
     let typeFormMap = {
-      0: (<EventEncounterForm onSubmit={this.onEventDataPageSubmit}/>)
+      0: (<EventEncounterForm initData={this.state.formData[this.state.formData.currentPage]} onSubmit={this.onEventPageSubmit} onCancel={this.onEventPageCancel} />)
     }
     return (
       <div className="eventCreator__dataPage">
@@ -85,8 +81,21 @@ export default class EventCreator extends React.Component {
       </div>
     )
   }
-  onEventDataPageSubmit(eventData){
-
+  onEventPageSubmit(pageFormData){
+    let nextFormData = _.extend({}, this.state.formData);
+    nextFormData[this.state.formData.currentPage] = pageFormData;
+    nextFormData.currentPage++;
+    this.setState({
+      formData: nextFormData
+    });
+  }
+  onEventPageCancel(pageFormData){
+    let nextFormData = _.extend({}, this.state.formData);
+    nextFormData[this.state.formData.currentPage] = pageFormData;
+    nextFormData.currentPage--;
+    this.setState({
+      formData: nextFormData
+    });
   }
 }
 

@@ -1,20 +1,25 @@
-.eventCreator{
-  .modal-submit-overlay {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(255,255,255,0.75);
-    z-index: 1;
-    i{
-      display: block;
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      margin: 50% auto 0 auto;
-      transform: translateY(-50%);
-      color: #777;
-    }
+.eventCreator .nzModal-content{
+  display: flex;
+  flex-direction: column;
+}
+.eventCreator__typePage{
+  flex-grow: 1;
+}
+.eventCreator__dataPage{
+  flex-grow: 1;
+  display: flex;
+  form{
+    flex-grow: 1;
+  }
+}
+.eventCreator__typePage__type {
+  border: 1px solid #777;
+  border-radius: 4px;
+  margin: 5px auto;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  cursor: pointer;
+  &:hover{
+    background-color: #f5f5ff;
   }
 }
