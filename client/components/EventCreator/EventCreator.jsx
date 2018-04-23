@@ -14,18 +14,19 @@ export default class EventCreator extends React.Component {
     super(props);
 
     this.state = {
-      formData: {
-        currentPage: 0,
-        pages: []
-      }
+      eventType: undefined,
+      eventData: {},
+      eventDataValidated: false,
+      supplementEventType: undefined,
+      supplementEventData: {}
     };
 
     ([
-      'renderModalContent',
-      'renderEventTypePage',
-      'renderEventDataPage',
-      'onEventPageSubmit',
-      'onEventPageCancel'
+      'renderSectionEventType',
+      'renderSectionEventData',
+      'onEventTypeChange',
+      'onEventDataChange',
+      'onEventDataValidationChange'
     ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this);
     })
@@ -34,9 +35,59 @@ export default class EventCreator extends React.Component {
   render(){
     return (
       <NzModal show={this.props.active} className="eventCreator">
-        {this.renderModalContent()}
+        {this.renderSectionEventType()}
+        {this.renderSectionEventData()}
+        {this.renderSectionSupplementEventType()}
+        {this.renderSectionSupplementEventType()}
+        <div className="diag">
+          DataValidation: {this.state.eventDataValidated.toString()}
+        </div>
       </NzModal>
     )
+  }
+
+  renderSectionEventType(){
+    let types = [{
+      id: 0,
+      label: 'Pokemon Encounter',
+      description: 'Encountered a pokemon, in the wild or during a scripted event.'
+    // }, {
+    //   id: 1,
+    //   label: 'Pokemon Update',
+    //   description: 'Change the status of one or more pokemon, such as their level, name or if they are alive or dead.'
+    }]
+    return (
+      <div className="eventCreator_eventType">
+        <h4>Select An Event Type</h4>
+        <select className="form-control" onChange={this.onEventTypeChange}>
+          {
+            [<option key={-1}>Select an Event Type</option>]
+            .concat(
+              types.map((type)=>{
+                return (<option key={type.id} value={type.id}>{type.label}</option>)
+              })
+            )
+          }
+        </select>
+      </div>
+    )
+  }
+
+  renderSectionEventData(){
+    if( this.state.eventType === undefined ) return null;
+    let EventFormComponent;
+    switch(this.state.eventType){
+      case 0: EventFormComponent = EventEncounterForm; break;
+      default: EventFormComponent = function(){return null}
+    }
+    return (<EventFormComponent onChange={this.onEventDataChange} updateValidation={this.onEventDataValidationChange} />)
+  }
+  renderSectionSupplementEventType(){
+    return null
+  }
+
+  renderSectionSupplementEventData(){
+    return null
   }
 
   /**
@@ -81,21 +132,30 @@ export default class EventCreator extends React.Component {
       </div>
     )
   }
-  onEventPageSubmit(pageFormData){
-    let nextFormData = _.extend({}, this.state.formData);
-    nextFormData[this.state.formData.currentPage] = pageFormData;
-    nextFormData.currentPage++;
+
+  onEventTypeChange(e){
     this.setState({
-      formData: nextFormData
-    });
+      eventType: parseInt(e.target.value),
+      eventData: {}
+    })
   }
-  onEventPageCancel(pageFormData){
-    let nextFormData = _.extend({}, this.state.formData);
-    nextFormData[this.state.formData.currentPage] = pageFormData;
-    nextFormData.currentPage--;
+
+  onEventDataChange(propName, data){
+    return new Promise((resolve)=>{
+      this.setState({
+        eventData: _.extend({}, this.state.eventData, {
+          [propName]: data
+        })
+      }, ()=>{
+        resolve();
+      })
+    })
+  }
+  
+  onEventDataValidationChange(validationStatus){
     this.setState({
-      formData: nextFormData
-    });
+      eventDataValidated: validationStatus
+    })
   }
 }
 

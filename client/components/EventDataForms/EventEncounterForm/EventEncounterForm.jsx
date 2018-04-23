@@ -59,10 +59,6 @@ export default class EventEncounterForm extends React.Component{
       {this.renderRouteSelection()}
       {this.renderOutcomeSelection()}
       {this.renderPokemonSection()}
-      <div className="eventEncounterForm__controls">
-        <button type="submit" className="btn btn-primary float-right">Next</button>
-        <button type="button" onClick={this.onCancel} className="btn btn-secondary float-right mr-1">Back</button>
-      </div>
     </form>)
   }
 
@@ -79,7 +75,7 @@ export default class EventEncounterForm extends React.Component{
     </div>)
   }
 
-  renderRouteSelection(){
+  renderOutcomeSelection(){
     return (<div className="form-group row">
       <label className="col-sm-2 col-form-label">Outcome</label>
       <div className="col-sm-10">
@@ -142,10 +138,6 @@ export default class EventEncounterForm extends React.Component{
     )
   }
 
-  renderOutcomeSelection(){
-    return (<div className=""></div>)
-  }
-
   /**
    * API Functions
    */
@@ -187,11 +179,28 @@ export default class EventEncounterForm extends React.Component{
    * EVENT HANDLERS
    */
   onFormElementChange(e){
+    let elementName = e.target.name;
+    let elementValue = e.target.value;
     this.setState(_.merge(this.state, {
       formData: {
-        [e.target.name]: e.target.value
+        [elementName]: elementValue
       }
-    }));
+    }), ()=>{
+      this.props.onChange(elementName, elementValue)
+      .then(()=>{
+        this.props.updateValidation(this.validateData())
+      })
+    });
+  }
+
+  validateData(){
+    if( this.state.formData.pokemonId === undefined
+    || this.state.formData.routeId === undefined
+    || this.state.formData.outcomeId === undefined )
+      return false
+    if( this.state.formData.outcomeId == 1 && !this.state.formData.pokemonName )
+      return false
+    return true;
   }
 
   onSubmit(e){
