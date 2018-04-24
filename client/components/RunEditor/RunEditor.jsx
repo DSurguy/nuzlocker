@@ -90,7 +90,7 @@ export default class RunEditor extends React.Component{
     this.setState({
       eventCreatorActive: false
     }, ()=>{
-      this.fetchRun();
+      this.fetchRun(this.state.run.id);
     })
   }
 }

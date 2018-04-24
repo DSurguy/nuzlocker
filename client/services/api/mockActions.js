@@ -98,7 +98,7 @@ export default {
         let nextId = mockState.runs[params[0]].events.reduce((maxId, event)=>maxId>event.id?maxId:event.id+1, 0);
         let newEvent = {
           id: nextId,
-          type: fetchData.eventType,
+          eventType: fetchData.eventType,
           eventData: new EVENT_CONSTRUCTORS[fetchData.eventType](fetchData)
         }
         mockState.runs[params[0]].events.push(newEvent);

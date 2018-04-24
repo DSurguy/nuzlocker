@@ -93,7 +93,7 @@ export default class EventEncounterForm extends React.Component{
       <div className="form-group row">
         <label className="col-sm-2 col-form-label">Pokemon</label>
         <div className="col-sm-10">
-          <select className="form-control" name="pokemonId" defaultValue={this.state.formData.pokemonId} onChange={this.onFormElementChange}>
+          <select className="form-control" name="pokemonDexId" defaultValue={this.state.formData.pokemonDexId} onChange={this.onFormElementChange}>
             {[<option key={-1}>Select a pokemon</option>].concat(this.state.optionsPokemon.map((pokemon)=>{
               return (<option key={pokemon.id} value={pokemon.id}>{pokemon.name}</option>)
             }))}
@@ -106,7 +106,7 @@ export default class EventEncounterForm extends React.Component{
 
   renderPokemonMetadata(){
     let controls;
-    if( this.state.formData.outcomeId && this.state.formData.pokemonId ){
+    if( this.state.formData.outcomeId && this.state.formData.pokemonDexId ){
       if( this.state.formData.outcomeId == 1 ){
         controls = (<React.Fragment>
           <div className="form-group">
@@ -194,7 +194,7 @@ export default class EventEncounterForm extends React.Component{
   }
 
   validateData(){
-    if( this.state.formData.pokemonId === undefined
+    if( this.state.formData.pokemonDexId === undefined
     || this.state.formData.routeId === undefined
     || this.state.formData.outcomeId === undefined )
       return false
