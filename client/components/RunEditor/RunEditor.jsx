@@ -8,11 +8,13 @@ export default class RunEditor extends React.Component{
     super(props);
 
     this.state = {
-      run: undefined
+      run: undefined,
+      runEvents: undefined
     };
 
     ([
       'fetchRun',
+      'fetchRunEvents',
       'renderRun',
       'onNewEventClick',
       'cancelCreateEvent',
@@ -23,7 +25,21 @@ export default class RunEditor extends React.Component{
   }
 
   componentDidMount(){
-    this.fetchRun(this.props.match.params.id);
+    let run;
+    this.fetchRun(this.props.match.params.id)
+    .then((fetchedRun)=>{
+      run = fetchedRun
+      return this.fetchRunEvents(run.id)
+    })
+    .then((events)=>{
+      this.setState({
+        run,
+        runEvents: events
+      })
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
   }
 
   render(){
@@ -32,7 +48,7 @@ export default class RunEditor extends React.Component{
       <div className="runEditor__runControls">
         <button onClick={this.onNewEventClick}><i className="fas fa-plus"></i> New Event</button>
       </div>
-      {this.state.run === undefined ? (
+      {this.state.run === undefined || this.state.runEvents === undefined ? (
         <div className="runEditor__loader">
           <i className="fas fa-sync fa-spin"></i>
         </div>
@@ -44,7 +60,7 @@ export default class RunEditor extends React.Component{
   renderRun(){
     return (
       <div className="runEditor__eventList">
-        {this.state.run.events.map((event)=>{
+        {this.state.runEvents.map((event)=>{
           return (
             <div key={event.id} className="runEditor__event m-1">
               Event
@@ -57,19 +73,20 @@ export default class RunEditor extends React.Component{
   }
 
   fetchRun(runId){
-    api.fetch(`/runs/${runId}`, {
+    return api.fetch(`/runs/${runId}`, {
       headers: {
         'content-type': 'application/json',
         'accept': 'application/json'
       }
     })
-    .then((run)=>{
-      this.setState({
-        run: run
-      })
-    })
-    .catch((err)=>{
-      console.error(err);
+  }
+
+  fetchRunEvents(runId){
+    return api.fetch(`/runs/${runId}/events`, {
+      headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      }
     })
   }
 
@@ -87,10 +104,12 @@ export default class RunEditor extends React.Component{
   }
 
   eventCreateComplete(){
-    this.setState({
-      eventCreatorActive: false
-    }, ()=>{
-      this.fetchRun(this.state.run.id);
+    this.fetchRunEvents(this.state.run.id)
+    .then((events)=>{
+      this.setState({
+        eventCreatorActive: false,
+        runEvents: events
+      })
     })
   }
 }

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Route, Link } from "react-router-dom"
 
-import RunEditor from '../RunEditor/RunEditor.jsx'
 import NzModal from '../shared/NzModal/NzModal.jsx'
 
 import api from '../../services/api/api.js'
@@ -45,8 +44,7 @@ export default class RunList extends React.Component{
   render(){
     return (<div className="runList">
       <div className="runList__runs">
-        <Route exact path={`${this.props.match.url}`} render={this.renderContent}/>
-        <Route path={`${this.props.match.url}/:id`} component={RunEditor}/>
+        {this.renderContent()}
       </div>
       <NzModal show={this.state.newRun.modalOpen} className="runList__createModal">
         <h2>Create New Run</h2>

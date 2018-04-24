@@ -4,6 +4,7 @@ import { Route, Link } from "react-router-dom"
 import SideMenu from '../SideMenu/SideMenu.jsx'
 import AuthedHeader from '../AuthedHeader/AuthedHeader.jsx'
 import RunList from '../RunList/RunList.jsx'
+import RunEditor from '../RunEditor/RunEditor.jsx'
 
 import api from '../../services/api/api.js';
 
@@ -50,7 +51,8 @@ export default class AuthedApp extends React.Component{
       <div className="pageContent container">
         {/* we omit the '/' because that's the base path here */}
         <Route exact path={`${this.props.match.url}dashboard`} component={AuthedAppContent} />
-        <Route path={`${this.props.match.url}runs`} component={RunList} />
+        <Route exact path={`${this.props.match.url}runs`} component={RunList} />
+        <Route exact path={`${this.props.match.url}runs/:id`} component={RunEditor} />
       </div>
     </div>)
   }

@@ -39,15 +39,6 @@ export default {
       let newRun = {
         id: nextId,
         userId: mockState.user.id,
-        events: [],
-        state: {
-          bank: [],
-          party: [],
-          pokemon: {},
-          goalStatus: [],
-          routeStatus: {}
-        },
-        goals: [],
         name: fetchData.name||`Run ${nextId}`,
         game: fetchData.game||'red'
       }
@@ -94,20 +85,41 @@ export default {
   },
   "^/runs/([0-9]+)/events$": {
     "POST": function (mockState, fetchData, params){
-      return new Promise((resolve, reject)=>{
-        let nextId = mockState.runs[params[0]].events.reduce((maxId, event)=>maxId>event.id?maxId:event.id+1, 0);
-        let newEvent = {
-          id: nextId,
-          eventType: fetchData.eventType,
-          eventData: new EVENT_CONSTRUCTORS[fetchData.eventType](fetchData)
+      for( let run of (mockState.runs||[]) ){
+        let paramRunId = params[0];
+        if( run.id === parseInt(paramRunId) ){
+          if( !mockState.runEvents ) mockState.runEvents = {};
+          if( !mockState.runEvents[paramRunId]) mockState.runEvents[paramRunId] = []
+          let nextId = mockState.runEvents[paramRunId].reduce((maxId, event)=>maxId>event.id?maxId:event.id+1, 0);
+          let newEvent = {
+            id: nextId,
+            eventType: fetchData.eventType,
+            eventData: new EVENT_CONSTRUCTORS[fetchData.eventType](fetchData)
+          }
+          mockState.runEvents[paramRunId].push(newEvent);
+          return Promise.resolve({
+            status: 200,
+            stateModified: true,
+            data: newEvent
+          })
         }
-        mockState.runs[params[0]].events.push(newEvent);
-        resolve({
+      }
+      return Promise.reject({
+        status: 404,
+        message: 'Run not found'
+      })
+    },
+    "GET": function (mockState, fetchData, params){
+      for( let run of (mockState.runs||[]) ){
+        if( run.id === parseInt(params[0]) ) return Promise.resolve({
           status: 200,
-          stateModified: true,
-          data: newEvent
+          data: ((mockState.runEvents||{})[params[0]]||[]).sort((a,b)=>a.id>b.id?-1:a.id<b.id?1:0)
         })
-      });
+      }
+      return Promise.reject({
+        status: 404,
+        message: 'Run not found'
+      })
     }
   },
   "^/data/?$": {
