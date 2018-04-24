@@ -14,7 +14,9 @@ export default class RunEditor extends React.Component{
     ([
       'fetchRun',
       'renderRun',
-      'onNewEventClick'
+      'onNewEventClick',
+      'cancelCreateEvent',
+      'eventCreateComplete'
     ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this)
     })
@@ -35,7 +37,7 @@ export default class RunEditor extends React.Component{
           <i className="fas fa-sync fa-spin"></i>
         </div>
       ) : this.renderRun()}
-      <EventCreator active={this.state.eventCreatorActive} />
+      <EventCreator active={this.state.eventCreatorActive} run={this.state.run} cancel={this.cancelCreateEvent} complete={this.eventCreateComplete}/>
     </div>)
   }
 
@@ -43,7 +45,12 @@ export default class RunEditor extends React.Component{
     return (
       <div className="runEditor__eventList">
         {this.state.run.events.map((event)=>{
-          return (<div className="runEditor__event">I AM EVENT</div>);
+          return (
+            <div key={event.id} className="runEditor__event m-1">
+              Event
+              <br/><code>{JSON.stringify(event)}</code>
+            </div>
+          );
         })}
       </div>
     )
@@ -70,6 +77,20 @@ export default class RunEditor extends React.Component{
     //do the thing
     this.setState({
       eventCreatorActive: true
+    })
+  }
+
+  cancelCreateEvent(){
+    this.setState({
+      eventCreatorActive: false
+    })
+  }
+
+  eventCreateComplete(){
+    this.setState({
+      eventCreatorActive: false
+    }, ()=>{
+      this.fetchRun();
     })
   }
 }

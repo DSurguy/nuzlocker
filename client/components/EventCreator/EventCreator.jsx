@@ -6,6 +6,7 @@ import extend from 'lodash/extend';
 let _ = {
   extend
 }
+import api from '../../services/api/api.js'
 
 import './EventCreator.scss';
 
@@ -26,7 +27,9 @@ export default class EventCreator extends React.Component {
       'renderSectionEventData',
       'onEventTypeChange',
       'onEventDataChange',
-      'onEventDataValidationChange'
+      'onEventDataValidationChange',
+      'createEvent',
+      'cancel'
     ]).forEach((funcName)=>{
       this[funcName] = this[funcName].bind(this);
     })
@@ -35,13 +38,19 @@ export default class EventCreator extends React.Component {
   render(){
     return (
       <NzModal show={this.props.active} className="eventCreator">
-        {this.renderSectionEventType()}
-        {this.renderSectionEventData()}
-        {this.renderSectionSupplementEventType()}
-        {this.renderSectionSupplementEventType()}
-        <div className="diag">
-          DataValidation: {this.state.eventDataValidated.toString()}
-        </div>
+        <form onSubmit={this.createEvent}>
+          {this.renderSectionEventType()}
+          {this.renderSectionEventData()}
+          {this.renderSectionSupplementEventType()}
+          {this.renderSectionSupplementEventType()}
+          <div className="diag">
+            DataValidation: {this.state.eventDataValidated.toString()}
+          </div>
+          <div>
+            <button type="button" onClick={this.cancel} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary" disabled={!this.state.eventDataValidated}>Submit</button>
+          </div>
+        </form>
       </NzModal>
     )
   }
@@ -90,49 +99,6 @@ export default class EventCreator extends React.Component {
     return null
   }
 
-  /**
-   * Renderers
-   */
-  renderModalContent(){
-    let pageRenderers = [
-      this.renderEventTypePage,
-      this.renderEventDataPage
-    ]
-    return pageRenderers[this.state.formData.currentPage]()
-  }
-
-  renderEventTypePage(){
-    let types = [{
-      id: 0,
-      label: 'Pokemon Encounter',
-      description: 'Encountered a pokemon, in the wild or during a scripted event.'
-    // }, {
-    //   id: 1,
-    //   label: 'Pokemon Update',
-    //   description: 'Change the status of one or more pokemon, such as their level, name or if they are alive or dead.'
-    }]
-
-    return (<div className="eventCreator__typePage">
-      <h4>Select An Event Type</h4>
-      {types.map((type)=>{
-        return (<div key={type.id} className="eventCreator__typePage__type" onClick={this.onEventPageSubmit.bind(this, {eventType: type.id})}>
-          <h5>{type.label}</h5>
-          <p>{type.description}</p>
-        </div>)
-      })}
-    </div>)
-  }
-  renderEventDataPage(){
-    let typeFormMap = {
-      0: (<EventEncounterForm initData={this.state.formData[this.state.formData.currentPage]} onSubmit={this.onEventPageSubmit} onCancel={this.onEventPageCancel} />)
-    }
-    return (
-      <div className="eventCreator__dataPage">
-        {typeFormMap[this.state.formData[0].eventType]}
-      </div>
-    )
-  }
-
   onEventTypeChange(e){
     this.setState({
       eventType: parseInt(e.target.value),
@@ -156,6 +122,30 @@ export default class EventCreator extends React.Component {
     this.setState({
       eventDataValidated: validationStatus
     })
+  }
+
+  createEvent(e){
+    e.preventDefault();
+    api.fetch(`/runs/${this.props.run.id}/events`, {
+      method: 'POST',
+      body: _.extend({}, {
+        eventType: this.state.eventType
+      }, this.state.eventData),
+      headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      }
+    })
+    .then(()=>{
+      this.props.complete();
+    })
+    .catch((err)=>{
+      console.error(err);
+    })
+  }
+
+  cancel(){
+    this.props.cancel();
   }
 }
 

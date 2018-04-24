@@ -54,12 +54,12 @@ export default class EventEncounterForm extends React.Component{
   }
 
   render(){
-    return (<form className="eventEncounterForm" onSubmit={this.onSubmit}>
+    return (<div className="eventEncounterForm" onSubmit={this.onSubmit}>
       <h4>Pokemon Encountered!</h4>
       {this.renderRouteSelection()}
       {this.renderOutcomeSelection()}
       {this.renderPokemonSection()}
-    </form>)
+    </div>)
   }
 
   renderRouteSelection(){
